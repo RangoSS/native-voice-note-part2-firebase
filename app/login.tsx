@@ -8,10 +8,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { auth, db } from '../config/firebaseConfig'; // Firebase configuration
 
+import { useRouter } from 'expo-router';
+
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const router = useRouter(); // Use router for navigation
   // Handle login
   const handleLogin = async () => {
     try {
@@ -34,7 +37,7 @@ const Login = () => {
         console.log('User data:', userData); // Log the user data to the console
 
         // Navigate to the home page or another screen after successful login
-        Alert.alert('Login Successful', 'You are now logged in!');
+        router.push('/home');
       } else {
         Alert.alert('Error', 'User data not found!');
       }
