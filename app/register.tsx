@@ -12,6 +12,7 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '../config/firebaseConfig';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 
 const RegisterScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -23,6 +24,8 @@ const RegisterScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [country, setCountry] = useState('');
   const [role, setRole] = useState('');
   const [status, setStatus] = useState('');
+
+  const router = useRouter(); // Use router for navigation
 
   const handleRegister = async () => {
     if (
@@ -76,7 +79,7 @@ const RegisterScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       setStatus('');
 
       // Navigate to Login Screen
-      navigation.navigate('Login');
+      router.push('/login');
     } catch (error: any) {
       console.error('Error registering user:', error);
       Alert.alert('Error', error.message || 'Something went wrong.');

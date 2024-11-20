@@ -1,24 +1,51 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { Link } from 'expo-router'; // Expo router for navigation
 import { LinearGradient } from 'expo-linear-gradient'; // Gradient background
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { getFirestore, doc, getDoc } from 'firebase/firestore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import { auth, db } from '../config/firebaseConfig'; // Firebase configuration
 
 const Login = () => {
-  // State hooks for email and password
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  // Handle form submission (currently just logs the email and password)
-  const handleLogin = () => {
-    console.log('Email:', email);
-    console.log('Password:', password);
-    // Here you would typically handle authentication logic (API call)
+  // Handle login
+  const handleLogin = async () => {
+    try {
+      // Sign in using Firebase Authentication
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Get the user data from Firestore
+      const userDocRef = doc(db, 'users', user.uid);
+      const userDocSnapshot = await getDoc(userDocRef);
+
+      if (userDocSnapshot.exists()) {
+        const userData = userDocSnapshot.data();
+
+        // Save user data and token in AsyncStorage
+        await AsyncStorage.setItem('userToken', userCredential.user.accessToken); // Save the Firebase user token
+        await AsyncStorage.setItem('userId', user.uid); // Save user ID
+        await AsyncStorage.setItem('userData', JSON.stringify(userData)); // Save user data
+
+        console.log('User data:', userData); // Log the user data to the console
+
+        // Navigate to the home page or another screen after successful login
+        Alert.alert('Login Successful', 'You are now logged in!');
+      } else {
+        Alert.alert('Error', 'User data not found!');
+      }
+    } catch (error) {
+      console.error('Error during login:', error.message);
+      Alert.alert('Error', 'Invalid credentials or an error occurred.');
+    }
   };
 
   return (
-    <LinearGradient
-      colors={['#4c669f', '#3b5998', '#192f5d']} // Gradient colors
-      style={styles.container}>
+    <LinearGradient colors={['#d9a7c7', '#fffcdc']} style={styles.container}>
       <View style={styles.formContainer}>
         <Text style={styles.heading}>Login</Text>
 
