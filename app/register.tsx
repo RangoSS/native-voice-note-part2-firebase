@@ -10,10 +10,10 @@ import {
 } from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, db } from '../config/firebaseConfig'; // Import Firebase auth and Firestore
+import { auth, db } from '../config/firebaseConfig';
 import { LinearGradient } from 'expo-linear-gradient';
 
-const RegisterScreen: React.FC = () => {
+const RegisterScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
@@ -21,8 +21,8 @@ const RegisterScreen: React.FC = () => {
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [country, setCountry] = useState('');
-  const [role, setRole] = useState('user'); // Default role
-  const [status, setStatus] = useState('active'); // Default status
+  const [role, setRole] = useState('');
+  const [status, setStatus] = useState('');
 
   const handleRegister = async () => {
     if (
@@ -32,7 +32,9 @@ const RegisterScreen: React.FC = () => {
       !displayName ||
       !phone ||
       !address ||
-      !country
+      !country ||
+      !role ||
+      !status
     ) {
       Alert.alert('Error', 'Please fill out all fields');
       return;
@@ -61,6 +63,20 @@ const RegisterScreen: React.FC = () => {
       });
 
       Alert.alert('Success', 'User registered successfully!');
+      
+      // Reset the form
+      setEmail('');
+      setPassword('');
+      setUsername('');
+      setDisplayName('');
+      setPhone('');
+      setAddress('');
+      setCountry('');
+      setRole('');
+      setStatus('');
+
+      // Navigate to Login Screen
+      navigation.navigate('Login');
     } catch (error: any) {
       console.error('Error registering user:', error);
       Alert.alert('Error', error.message || 'Something went wrong.');
@@ -69,7 +85,7 @@ const RegisterScreen: React.FC = () => {
 
   return (
     <LinearGradient
-      colors={['#4c669f', '#3b5998', '#192f6a']} // Gradient colors
+      colors={['#d9a7c7', '#fffcdc']} // Gradient colors
       style={styles.container}
     >
       <Text style={styles.title}>Register</Text>
@@ -125,13 +141,24 @@ const RegisterScreen: React.FC = () => {
         value={country}
         onChangeText={setCountry}
       />
+      <TextInput
+        style={styles.input}
+        placeholder="Role (e.g., user, admin)"
+        placeholderTextColor="#ccc"
+        value={role}
+        onChangeText={setRole}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Status (e.g., active, inactive)"
+        placeholderTextColor="#ccc"
+        value={status}
+        onChangeText={setStatus}
+      />
       <Button title="Register" onPress={handleRegister} color="#3b5998" />
       <TouchableOpacity
         style={styles.link}
-        onPress={() => {
-          // Navigate to login screen
-          Alert.alert('Redirect', 'Navigate to Login Screen');
-        }}
+        onPress={() => navigation.navigate('Login')}
       >
         <Text style={styles.linkText}>Already have an account? Login here</Text>
       </TouchableOpacity>
