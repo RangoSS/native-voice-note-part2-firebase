@@ -1,5 +1,6 @@
 import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import Entypo from '@expo/vector-icons/Entypo';
 import { Link, Tabs } from 'expo-router';
 import { Pressable, Button, View } from 'react-native';  // Import View
 
